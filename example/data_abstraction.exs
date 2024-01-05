@@ -17,6 +17,7 @@ end
 
 Sample.run()
 
+#basic abstraction
 
 #add list with some entries and get the list with specific date
 defmodule ToDoList do
@@ -41,8 +42,24 @@ defmodule ToDoList do
   end
 
   defp print_separate_lines(entries) do
-    Enum.each(entries, &IO.puts(&1))
+    Enum.each(entries, &IO.puts(&1)) #&capture operator
   end
 end
 
-ToDoList.addlist()
+# ToDoList.addlist()
+
+#composing abstraction is from creating one abstration on top of another.
+
+
+defmodule MultiDict do
+  def new(), do: ToDoList.addlist()
+
+  def add_entry(todo_list, date, title) do
+    ToDoList.add_entry(todo_list, date, title)
+  end
+  def entries(todo_list, date) do
+    ToDoList.entries(todo_list, date)
+  end
+  end
+
+  MultiDict.new() # i call this but it will print previous code example this is called composing abstraction
