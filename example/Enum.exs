@@ -3,10 +3,10 @@ square = fn x ->
   end
   square.(5)
 #Map
-  Enum.map([1, 2, 3], fn x -> IO.puts (x * 2) end)
+  Enum.map([1, 2, 3], fn x when x > 0 -> IO.puts (x * 2) end)
 
 #Each
-  print_element = fn x -> IO.puts(x*2) end
+  print_element =  fn x  when x > 0 ->  IO.puts(x*2) end
   Enum.each(
     [1, 2, 3],
     &IO.puts/1)
