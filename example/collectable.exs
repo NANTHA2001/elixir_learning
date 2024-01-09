@@ -1,3 +1,7 @@
+# Polymorphism with protocols
+# Polymorphism is a runtime decision about which code to execute, based on the nature
+# of the input data.
+
 defimpl Collectable, for: MapSet do
   def into(map_set) do
     collector_fun = fn
