@@ -1,9 +1,9 @@
-defmodule Project.MixProject do
+defmodule Friends.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :project,
+      app: :friends,
       version: "0.1.0",
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
@@ -14,7 +14,8 @@ defmodule Project.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger],
+      mod: {Friends.Application, []}
     ]
   end
 
@@ -23,13 +24,8 @@ defmodule Project.MixProject do
     [
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
-      {:stream_data, "~> 0.5", only: :test},
       {:ecto_sql, "~> 3.2"},
       {:postgrex, "~> 0.15"}
     ]
   end
-
-  # defp deps() do
-  #   [{:stream_data, "~> 0.5", only: :test}]
-  # end
 end
