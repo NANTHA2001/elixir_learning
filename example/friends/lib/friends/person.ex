@@ -1,5 +1,5 @@
 defmodule Friends.Person do
-  use Ecto.Schema
+  use Ecto.Schema #Schemas in Ecto are used to map database tables to Elixir structs and define the structure of the data.
   import Ecto.Changeset
 
   schema "people" do

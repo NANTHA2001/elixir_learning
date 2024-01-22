@@ -11,3 +11,4 @@ defmodule Friends.Repo.Migrations.CreateMoviesActors do
 
   end
 end
+# I'm new!

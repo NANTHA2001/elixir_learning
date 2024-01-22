@@ -14,10 +14,11 @@ defmodule Friends.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger],
-      mod: {Friends.Application, []}
+      mod: {LiveViewStudio.Application, []},
+      extra_applications: [:logger, :runtime_tools, :live_view_studio]
     ]
   end
+
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
