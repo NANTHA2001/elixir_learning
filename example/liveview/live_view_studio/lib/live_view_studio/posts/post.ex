@@ -1,4 +1,4 @@
-defmodule LiveViewStudio.Posts.Post do
+defmodule LiveViewStudioWeb.Posts.Post do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -9,8 +9,7 @@ defmodule LiveViewStudio.Posts.Post do
     field :image_path, :string
     belongs_to :user, User
 
-
-    timestamps(type: :utc_datetime)
+    timestamps()
   end
 
   @doc false
