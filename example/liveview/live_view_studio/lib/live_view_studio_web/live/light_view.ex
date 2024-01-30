@@ -4,6 +4,8 @@ defmodule LiveViewStudioWeb.LightLive do
   alias LiveViewStudioWeb.Posts
   alias LiveViewStudioWeb.Posts.Post
 
+  embed_templates "layouts/*"
+
   @impl true
   def render(%{loading: true} = assigns) do
     ~H"""
