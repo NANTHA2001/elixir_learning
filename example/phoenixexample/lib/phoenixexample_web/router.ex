@@ -11,6 +11,8 @@ defmodule PhoenixexampleWeb.Router do
     plug PhoenixexampleWeb.Plugs.Locale, "en"
     plug :fetch_current_user
     plug :fetch_current_cart
+    # plug OurAuth
+   plug :put_user_token
 
   end
 
@@ -20,6 +22,7 @@ defmodule PhoenixexampleWeb.Router do
     plug :accepts, ["json"]
     resources "/urls", UrlController, except: [:new, :edit]
   end
+
 
   scope "/", PhoenixexampleWeb do
     pipe_through :browser
@@ -72,6 +75,17 @@ defmodule PhoenixexampleWeb.Router do
          assign(conn, :cart, new_cart)
        end
      end
+
+
+     defp put_user_token(conn, _) do
+      if current_user = conn.assigns[:current_user] do
+        token = Phoenix.Token.sign(conn, "user socket", current_user.id)
+        assign(conn, :user_token, token)
+      else
+        conn
+      end
+
+    end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:phoenixexample, :dev_routes) do

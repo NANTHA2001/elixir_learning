@@ -14,6 +14,7 @@ defmodule Phoenixexample.Application do
       {Phoenix.PubSub, name: Phoenixexample.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: Phoenixexample.Finch},
+      PhoenixexampleWeb.Presence,
       # Start a worker by calling: Phoenixexample.Worker.start_link(arg)
       # {Phoenixexample.Worker, arg},
       # Start to serve requests, typically the last entry

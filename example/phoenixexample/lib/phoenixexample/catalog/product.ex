@@ -9,6 +9,7 @@ defmodule Phoenixexample.Catalog.Product do
     field :title, :string
     field :price, :decimal
     field :views, :integer
+    # field :image_path, :string
     many_to_many :categories, Category, join_through: "product_categories", on_replace: :delete
     timestamps(type: :utc_datetime)
   end

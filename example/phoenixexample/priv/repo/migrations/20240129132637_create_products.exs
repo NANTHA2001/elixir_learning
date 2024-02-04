@@ -7,6 +7,7 @@ defmodule Phoenixexample.Repo.Migrations.CreateProducts do
       add :description, :string
       add :price, :decimal, precision: 15, scale: 6, null: false
       add :views, :integer, default: 0, null: false
+      # add :image_path, :string
 
       timestamps(type: :utc_datetime)
     end
