@@ -15,22 +15,38 @@ defmodule LiveViewStudioWeb.LightLive do
 
   def render(assigns) do
     ~H"""
-    <h1 class="text-2xl">Finsta</h1>
+
+    <Mycomponent.heading title="Finsta" />
+
+
+    <Mycomponent.greet />
+    <Mycomponent.notification/>
+
     <.button type="button" phx-click={show_modal("new-post-modal")}>Create Post</.button>
+
+
 
     <div id="feed" phx-update="stream" class="flex flex-col gap-2">
       <div :for={{dom_id, post} <- @streams.posts} id={dom_id} class="w-1/2 mx-auto flex flex-col gap-2 p-4 border rounded">
 
         <img src={post.image_path} />
-        <p><%= post.user.email %></p>
+        <p class="bg-stone-300 w-1/2"><%= post.user.email %>
+        </p>
         <p><%= post.caption %></p>
       </div>
     </div>
 
+
     <.modal id="new-post-modal">
       <.simple_form for={@form} phx-change="validate" phx-submit="save-post">
-        <.live_file_input upload={@uploads.image} required />
-        <.input field={@form[:caption]} type="textarea" label="Caption" required />
+
+      <div class="container" phx-drop-target={@uploads.image.ref}>
+        <.live_file_input upload={@uploads.image} required /></div>
+        <.input field={@form[:caption]} type="textarea" label="Caption" phx-debounce="1000" required class=
+          "bg-red"/>
+
+          <input type="text" inputmode="numeric" pattern="[0-9]*"/>
+
 
         <.button type="submit" phx-disable-with="Saving ...">Create Post</.button>
       </.simple_form>
@@ -106,4 +122,8 @@ defmodule LiveViewStudioWeb.LightLive do
       {:postpone, ~p"/uploads/#{Path.basename(dest)}"}
     end)
   end
+
+
+
+
 end
