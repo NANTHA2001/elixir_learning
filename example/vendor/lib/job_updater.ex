@@ -62,7 +62,7 @@ defmodule JobUpdater do
   defp write_latency_to_file(latency_map, output_file_path) do
     new_content =
       for {job_id, latency} <- latency_map do
-        "#{job_id}: #{latency} seconds\n"
+        "#{job_id}: #{latency} second\n"
       end
       |> Enum.join()
 
