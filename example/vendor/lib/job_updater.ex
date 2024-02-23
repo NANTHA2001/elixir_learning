@@ -1,33 +1,61 @@
 defmodule JobUpdater do
   def process_job_updates(json_file_path, output_file_path) do
     json_file_path
-    |> File.read()
+    |> read_file()
     |> decode_json()
+    |> handle_decoding_result(output_file_path)
+  end
+
+  defp read_file(json_file_path) do
+    case File.read(json_file_path) do
+      {:ok, json_data} -> {:ok, json_data}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  defp decode_json({:ok, json_data}) do
+    case Jason.decode(json_data) do
+      {:ok, decoded_contents} -> {:ok, decoded_contents}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  defp handle_decoding_result({:ok, decoded_contents}, output_file_path) do
+    IO.puts "JSON decoded successfully"
+    decoded_contents
     |> filter_farm_3_jobs()
     |> calculate_time_difference()
     |> write_latency_to_file(output_file_path)
+    IO.puts "Latency data written to #{output_file_path}"
   end
 
-  defp decode_json({:ok, json_data}), do: {:ok, Jason.decode(json_data)}
-  defp decode_json({:error, reason}), do: {:error, reason}
-
-  defp filter_farm_3_jobs({:ok, decoded_contents}) do
-    {:ok, Enum.filter(decoded_contents, &(&1["farm_id"] == 3))}
+  defp handle_decoding_result({:error, reason}, _) do
+    IO.puts "Error decoding JSON content: #{reason}"
   end
-  defp filter_farm_3_jobs({:error, reason}), do: {:error, reason}
 
-  defp calculate_time_difference({:ok, updates}) when is_list(updates) do
+  defp filter_farm_3_jobs(decoded_contents) do
+    Enum.filter(decoded_contents, &(&1["farm_id"] == 3))
+  end
+
+  defp calculate_time_difference(updates) when is_list(updates) do
+    updates
+    |> handle_empty_updates()
+    |> Enum.reduce(%{}, &calculate_job_latency/2)
+  end
+
+  defp handle_empty_updates(updates) do
     if Enum.empty?(updates) do
-      {:ok, %{}}
+      IO.puts("No updates found.")
+      %{}
     else
-      {:ok, Enum.reduce(updates, %{}, &calculate_job_latency/2)}
+      updates
     end
   end
-  defp calculate_time_difference({:error, _}), do: {:error, "No updates found."}
 
   defp calculate_job_latency(update, result) do
     timestamp = parse_iso8601(update["timestamp"])
-    Enum.reduce(update["jobs"], result, &calculate_individual_latency(timestamp, &1, &2))
+    update["jobs"]
+    |> Enum.reduce(result, &calculate_individual_latency(timestamp, &1, &2))
   end
 
   defp calculate_individual_latency(timestamp, job, result) do
@@ -48,7 +76,7 @@ defmodule JobUpdater do
     NaiveDateTime.from_iso8601!(timestamp)
   end
 
-  defp write_latency_to_file({:ok, latency_map}, output_file_path) do
+  defp write_latency_to_file(latency_map, output_file_path) do
     new_content =
       for {job_id, latency} <- latency_map do
         "#{job_id}: #{latency} second\n"
@@ -56,9 +84,7 @@ defmodule JobUpdater do
       |> Enum.join()
 
     File.write(output_file_path, new_content)
-    IO.puts "Latency data written to #{output_file_path}"
   end
-  defp write_latency_to_file({:error, reason}, _), do: IO.puts("Error: #{reason}")
 end
 
 # Example usage:
