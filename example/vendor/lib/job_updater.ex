@@ -10,7 +10,7 @@ defmodule JobUpdater do
             IO.inspect farm_3_updates
 
             job_latency_map = calculate_time_difference(farm_3_updates)
-            IO.inspect job_latency_map
+            # IO.inspect job_latency_map
 
             write_latency_to_file(job_latency_map, output_file_path)
             IO.puts "Latency data written to #{output_file_path}"
@@ -27,7 +27,7 @@ defmodule JobUpdater do
     Enum.filter(decoded_content, &(&1["farm_id"] == 3))
   end
 
-  def calculate_time_difference(updates) when is_list(updates) do
+  defp calculate_time_difference(updates) when is_list(updates) do
     if Enum.empty?(updates) do
       IO.puts("No updates found.")
       %{}
