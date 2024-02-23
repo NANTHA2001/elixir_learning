@@ -1,40 +1,29 @@
 defmodule JobUpdater do
   def process_job_updates(json_file_path, output_file_path) do
-    case File.read(json_file_path) do
-      {:ok, json_data} ->
-        case Jason.decode(json_data) do
-          {:ok, decoded_contents} ->
-            IO.puts "JSON decoded successfully"
-
-            farm_3_updates = filter_farm_3_jobs(decoded_contents)
-            IO.inspect farm_3_updates
-
-            job_latency_map = calculate_time_difference(farm_3_updates)
-            # IO.inspect job_latency_map
-
-            write_latency_to_file(job_latency_map, output_file_path)
-            IO.puts "Latency data written to #{output_file_path}"
-
-          {:error, reason} ->
-            IO.puts "Error decoding JSON content: #{reason}"
-        end
-      {:error, reason} ->
-        IO.puts "Error reading file: #{json_file_path} - Reason: #{reason}"
-    end
+    json_file_path
+    |> File.read()
+    |> decode_json()
+    |> filter_farm_3_jobs()
+    |> calculate_time_difference()
+    |> write_latency_to_file(output_file_path)
   end
 
-  defp filter_farm_3_jobs(decoded_content) do
-    Enum.filter(decoded_content, &(&1["farm_id"] == 3))
-  end
+  defp decode_json({:ok, json_data}), do: {:ok, Jason.decode(json_data)}
+  defp decode_json({:error, reason}), do: {:error, reason}
 
-  defp calculate_time_difference(updates) when is_list(updates) do
+  defp filter_farm_3_jobs({:ok, decoded_contents}) do
+    {:ok, Enum.filter(decoded_contents, &(&1["farm_id"] == 3))}
+  end
+  defp filter_farm_3_jobs({:error, reason}), do: {:error, reason}
+
+  defp calculate_time_difference({:ok, updates}) when is_list(updates) do
     if Enum.empty?(updates) do
-      IO.puts("No updates found.")
-      %{}
+      {:ok, %{}}
     else
-      Enum.reduce(updates, %{}, &calculate_job_latency/2)
+      {:ok, Enum.reduce(updates, %{}, &calculate_job_latency/2)}
     end
   end
+  defp calculate_time_difference({:error, _}), do: {:error, "No updates found."}
 
   defp calculate_job_latency(update, result) do
     timestamp = parse_iso8601(update["timestamp"])
@@ -59,7 +48,7 @@ defmodule JobUpdater do
     NaiveDateTime.from_iso8601!(timestamp)
   end
 
-  defp write_latency_to_file(latency_map, output_file_path) do
+  defp write_latency_to_file({:ok, latency_map}, output_file_path) do
     new_content =
       for {job_id, latency} <- latency_map do
         "#{job_id}: #{latency} second\n"
@@ -67,10 +56,10 @@ defmodule JobUpdater do
       |> Enum.join()
 
     File.write(output_file_path, new_content)
+    IO.puts "Latency data written to #{output_file_path}"
   end
+  defp write_latency_to_file({:error, reason}, _), do: IO.puts("Error: #{reason}")
 end
-
-
 
 # Example usage:
 JobUpdater.process_job_updates("v1_jobs_1h.csv", "latency_output.txt")
